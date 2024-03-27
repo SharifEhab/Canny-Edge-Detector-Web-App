@@ -13,7 +13,7 @@ var low = parseFloat(inputField1.value);
 
 var inputField2 = document.getElementById('high');
 var high = parseFloat(inputField2.value);
-div2.setAttribute('src', '');
+//div2.setAttribute('src', '');
 
 
 img1.addEventListener('change', function (event) {
