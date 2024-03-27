@@ -4,9 +4,15 @@ var div1 = document.getElementById('originalimg1');
 
 var div2=document.getElementById('modified');
 var btn = document.getElementById('submitBtn');
-var inputField = document.getElementById('sigma');
-var sigma = parseInt(inputField.value);
 
+var inputField = document.getElementById('sigma');
+var sigma = parseFloat(inputField.value);
+
+var inputField1 = document.getElementById('low');
+var low = parseFloat(inputField1.value);
+
+var inputField2 = document.getElementById('high');
+var high = parseFloat(inputField2.value);
 div2.setAttribute('src', '');
 
 
@@ -54,12 +60,15 @@ img1.addEventListener('change', function (event) {
   
 btn.addEventListener('click', function() {
     // Assuming 'sigma' and 'div1.src' (base64 image data) are defined
+    sigma = parseFloat(inputField.value);
+    high = parseFloat(inputField2.value);
+    low = parseFloat(inputField1.value);
 fetch('/upload', {
     method: 'POST',
     headers: {
         'Content-Type': 'application/json'
     },
-    body: JSON.stringify({ sigma: sigma, image_data: div1.src })
+    body: JSON.stringify({ sigma: sigma, image_data: div1.src, high:high ,low:low })
 })
 .then(response => response.blob())
 .then(image => {
