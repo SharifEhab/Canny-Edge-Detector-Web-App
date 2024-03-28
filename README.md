@@ -1,1 +1,1 @@
-#Canny Edge Detection Algorithm
+# Canny Edge Detection Algorithm
