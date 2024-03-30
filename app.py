@@ -38,8 +38,8 @@ def upload():
     # Extract image data from JSON
     image_data = data['image_data']
     # Extract high and low thresholds for Canny edge detection
-    high_threshold = data['high']
-    low_threshold = data['low']
+    high_threshold_ratio = data['high']
+    low_threshold_ratio = data['low']
     # Decode and process image data
     image_data = base64.b64decode(image_data.split(',')[1])
     # Convert image data to a PIL Image object
@@ -61,7 +61,7 @@ def upload():
     nonMaxImg = functions.non_max_suppression(gradientMat, thetaMat)
 
     # Thresholding
-    thresholdImg = functions.threshold(nonMaxImg, low_threshold, high_threshold)
+    thresholdImg = functions.threshold(nonMaxImg, low_threshold_ratio, high_threshold_ratio)
 
     # Hysteresis
     img_final = functions.hysteresis(thresholdImg)

@@ -89,51 +89,85 @@ def sobel_filters(image):
 
     return magnitude, direction
 
+def non_max_suppression(G, theta):
+    M, N = G.shape
+    Z = np.zeros((M, N), dtype=np.int32)  # resultant image
 
+    # Convert radians to degrees and map negative angles to positive
+    angle = theta * 180. / np.pi
+    angle[angle < 0] += 180
 
-def non_max_suppression(image, degree):
+    for i in range(1, M - 1):
+        for j in range(1, N - 1):
+            q = 255  # Neighbor q
+            r = 255  # Neighbor r
+
+            # Based on the angle, select neighbors q and r for comparison
+            if (0 <= angle[i, j] < 22.5) or (157.5 <= angle[i, j] <= 180):
+                r = G[i, j - 1]
+                q = G[i, j + 1]
+
+            elif (22.5 <= angle[i, j] < 67.5):
+                r = G[i - 1, j + 1]
+                q = G[i + 1, j - 1]
+
+            elif (67.5 <= angle[i, j] < 112.5):
+                r = G[i - 1, j]
+                q = G[i + 1, j]
+
+            elif (112.5 <= angle[i, j] < 157.5):
+                r = G[i + 1, j + 1]
+                q = G[i - 1, j - 1]
+
+            # If current pixel's magnitude is greater than or equal to both neighbors, keep it
+            if (G[i, j] >= q) and (G[i, j] >= r):
+                Z[i, j] = G[i, j]
+            else:
+                Z[i, j] = 0
+
+    return Z
+
+def threshold(img, lowThresholdRatio = 0.05, highThresholdRatio = 0.09):
     """
-    Performs non-maximum suppression on an edge magnitude image based on gradient direction.
+    Applies double thresholding to an edge magnitude image.
 
     Args:
-    - image (ndarray): Edge magnitude image.
-    - degree (ndarray): Gradient direction image.
+    - img (ndarray): Input image.
+    - lowThreshold (float): Low threshold value.
+    - highThreshold (float): High threshold value.
 
     Returns:
-    - image (ndarray): Edge magnitude image after non-maximum suppression.
+    - res (ndarray): Image after double thresholding.
 
     """
 
-    # Get the dimensions of the image
-    width = len(image[0])
-    height = len(image)
+    # Print low and high thresholds
+   # print(lowThreshold, highThreshold)
 
-    # Iterate over each pixel in the image
-    for x in range(0, width):
-        for y in range(0, height):
-            # Skip boundary pixels
-            if x == 0 or y == height - 1 or y == 0 or x == width - 1:
-                image[y][x] = 0
-                continue
+    highThreshold = np.max(img) * highThresholdRatio
+    lowThreshold = highThreshold * lowThresholdRatio
 
-            # Determine the direction of the gradient at the current pixel
-            direction = degree[y][x] % 4
+    # Get image dimensions
+    M, N = img.shape
 
-            # Suppress non-maximum pixels based on gradient direction
-            if direction == 0:
-                if image[y][x] <= image[y][x - 1] or image[y][x] <= image[y][x + 1]:
-                    image[y][x] = 0
-            elif direction == 1:
-                if image[y][x] <= image[y - 1][x + 1] or image[y][x] <= image[y + 1][x - 1]:
-                    image[y][x] = 0
-            elif direction == 2:
-                if image[y][x] <= image[y - 1][x] or image[y][x] <= image[y + 1][x]:
-                    image[y][x] = 0
-            elif direction == 3:
-                if image[y][x] <= image[y - 1][x - 1] or image[y][x] <= image[y + 1][x + 1]:
-                    image[y][x] = 0
+    # Initialize result array
+    res = np.zeros((M, N), dtype=np.int32)
 
-    return image
+    # Define weak and strong values
+    weak = np.int32(75)
+    strong = np.int32(255)
+
+    # Get indices of strong and weak pixels
+    strong_i, strong_j = np.where(img >= highThreshold)
+    zeros_i, zeros_j = np.where(img < lowThreshold)
+    weak_i, weak_j = np.where((img <= highThreshold) & (img >= lowThreshold))
+
+    # Assign values to result array based on thresholds
+    res[strong_i, strong_j] = strong
+    res[weak_i, weak_j] = weak
+
+    return res
+
     
 def hysteresis(img):
     """
@@ -172,46 +206,3 @@ def hysteresis(img):
 
     return img
 
-def threshold(img, lowThreshold, highThreshold):
-    """
-    Applies double thresholding to an edge magnitude image.
-
-    Args:
-    - img (ndarray): Input image.
-    - lowThreshold (float): Low threshold value.
-    - highThreshold (float): High threshold value.
-
-    Returns:
-    - res (ndarray): Image after double thresholding.
-
-    """
-
-    # Print low and high thresholds
-    print(lowThreshold, highThreshold)
-
-    # Calculate high and low thresholds if they are not None
-    if highThreshold is not None:
-        highThreshold = np.max(img) * highThreshold
-    if lowThreshold is not None:
-        lowThreshold = highThreshold * lowThreshold
-
-    # Get image dimensions
-    M, N = img.shape
-
-    # Initialize result array
-    res = np.zeros((M, N), dtype=np.int32)
-
-    # Define weak and strong values
-    weak = np.int32(75)
-    strong = np.int32(255)
-
-    # Get indices of strong and weak pixels
-    strong_i, strong_j = np.where(img >= highThreshold)
-    zeros_i, zeros_j = np.where(img < lowThreshold)
-    weak_i, weak_j = np.where((img <= highThreshold) & (img >= lowThreshold))
-
-    # Assign values to result array based on thresholds
-    res[strong_i, strong_j] = strong
-    res[weak_i, weak_j] = weak
-
-    return res
