@@ -150,7 +150,7 @@ def upload():
     
     nonMaxImg = non_max_suppression(gradientMat, thetaMat)
     
-    #Thresholding    
+    #Thresholding   
     
     thresholdImg = threshold(nonMaxImg,low_threshold, high_threshold)
     #hesterisis
