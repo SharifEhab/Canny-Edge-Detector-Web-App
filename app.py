@@ -40,6 +40,7 @@ def upload():
     # Extract high and low thresholds for Canny edge detection
     high_threshold_ratio = data['high']
     low_threshold_ratio = data['low']
+    kernel=data['kernel']
     # Decode and process image data
     image_data = base64.b64decode(image_data.split(',')[1])
     # Convert image data to a PIL Image object
@@ -52,7 +53,7 @@ def upload():
     cv2_image = cv2.cvtColor(cv2_image, cv2.COLOR_BGR2GRAY)
 
     # Smooth image using Gaussian blur
-    img_smoothed = functions.gaussian_kernel(cv2_image, 10, sigma)
+    img_smoothed = functions.gaussian_kernel(cv2_image, kernel, sigma)
 
     # Compute image gradient using Sobel operator
     gradientMat, thetaMat = functions.sobel_filters(img_smoothed)
