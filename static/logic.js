@@ -9,7 +9,7 @@ var inputField = document.getElementById('sigma');
 var sigma = parseFloat(inputField.value);
 
 var inputField3 = document.getElementById('kernel');
-var sigma = parseFloat(inputField3.value);
+var kernel = parseFloat(inputField3.value);
 
 var inputField1 = document.getElementById('low');
 var low = parseFloat(inputField1.value);
