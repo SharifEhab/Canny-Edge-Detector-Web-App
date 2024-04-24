@@ -8,6 +8,9 @@ var btn = document.getElementById('submitBtn');
 var inputField = document.getElementById('sigma');
 var sigma = parseFloat(inputField.value);
 
+var inputField3 = document.getElementById('kernel');
+var sigma = parseFloat(inputField3.value);
+
 var inputField1 = document.getElementById('low');
 var low = parseFloat(inputField1.value);
 
@@ -63,12 +66,13 @@ btn.addEventListener('click', function() {
     sigma = parseFloat(inputField.value);
     high = parseFloat(inputField2.value);
     low = parseFloat(inputField1.value);
+    kernel=parseFloat(inputField3.value);
 fetch('/upload', {
     method: 'POST',
     headers: {
         'Content-Type': 'application/json'
     },
-    body: JSON.stringify({ sigma: sigma, image_data: div1.src, high:high ,low:low })
+    body: JSON.stringify({ sigma: sigma, image_data: div1.src, high:high ,low:low,kernel:kernel })
 })
 .then(response => response.blob())
 .then(image => {
