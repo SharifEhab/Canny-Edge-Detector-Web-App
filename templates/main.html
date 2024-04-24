@@ -1,101 +1,58 @@
 <!DOCTYPE html>
 
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>Canny Edge Detector</title>
+    <link rel="stylesheet" href="../static/Css/main.css">
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            background-color: #f0f0f0;
-        }
-        #section1, #section2 {
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            margin: 20px;
-            padding: 20px;
-            background-color: #fff;
-            border-radius: 10px;
-        }
-        #section1 {
-            display: flex;
-            justify-content: space-between;
-        }
-        input[type="number"], input[type="file"] {
-            margin-top: 10px;
-        }
-        button {
-            margin-top: 20px;
-            padding: 10px 20px;
-            background-color: #007BFF;
-            color: #fff;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #0056b3;
-        }
-        img {
-            margin-top: 20px;
-        }
-        #h1, #h2 {
-            flex: 1;
-            margin: 10px;
-        }
-        #h2 {
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            height: 100%;
-        }
-        #h2 > div {
-            margin: 10px 0;
-        }
+
     </style>
 </head>
+
 <body>
-
-    <div id="section1">
-        <div id="h1">
-        <label for="img1">Select the image:</label>
-        <input type="file" id="img1" name="img1" accept=".jpeg, .jpg, .png">
-        <div>
-        <img id="originalimg1" width="400" height="400">
-        </div>
-    </div>
+    <div class="container-canny">
         <div id="h2">
-            <div>
-        <label for="sigma"> Sigma:</label>
-        <input type="number" id="sigma"></div>
-        <div>
-            <label for="kernel"> Kernel size:</label>
-            <input type="number" id="kernel"></div>
+            <div class="form-container">
+                <label for="sigma" class="title-input"> Sigma:</label>
+                <input type="number" id="sigma">
+            </div>
+            <div class="form-container">
+                <label for="kernel" class="title-input"> Kernel size:</label>
+                <input type="number" id="kernel">
+            </div>
 
-        <div>
-            
-        <label for="low"> LowerThreshold:</label>
-        <input type="number" id="low" ></div>
-        <div>
-        <label for="high"> HigherThreshold:</label>
-        <input type="number" id="high" ></div>
+            <div class="form-container">
 
-        <div>
-        <button id="submitBtn">Apply Canny Edge Detector</button>
+                <label for="low" class="title-input"> LowerThreshold:</label>
+                <input type="number" id="low">
+            </div>
+            <div class="form-container">
+                <label for="high" class="title-input"> HigherThreshold:</label>
+                <input type="number" id="high">
+            </div>
+            <div class="form-container">
+                <label for="img1" class="title-input">Select the image:</label>
+                <input type="file" id="img1" name="img1" accept=".jpeg, .jpg, .png">
+            </div>
         </div>
+        <div class="">
+            <button id="submitBtn">Apply Canny Edge Detector</button>
+        </div>
+        <div class="image-container">
+            <div id="section1">
+                <h2>Input</h2>
+                <img id="originalimg1" width="400" height="400">
+            </div>
+            <div id="section2">
+                <h2>Output</h2>
+                <img id="modified" width="400" height="400">
+            </div>
         </div>
     </div>
-    <div id="section2">
-        <h2>Output</h2>
-        <img id="modified" width="400" height="400">
-    </div>
-    
     <script src="../static/logic.js"></script>
 </body>
+
 </html>
