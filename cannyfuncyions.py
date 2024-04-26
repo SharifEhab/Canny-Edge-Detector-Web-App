@@ -89,43 +89,43 @@ def sobel_filters(image):
 
     return magnitude, direction
 
-def non_max_suppression(G, theta):
-    M, N = G.shape
-    Z = np.zeros((M, N), dtype=np.int32)  # resultant image
+def non_max_suppression(magnitude_image, gradient_angle):
+    height, width = magnitude_image.shape
+    suppressed_image = np.zeros((height, width), dtype=np.int32) # resultant image
 
     # Convert radians to degrees and map negative angles to positive
-    angle = theta * 180. / np.pi
-    angle[angle < 0] += 180
+    angle_degrees  = gradient_angle * 180. / np.pi
+    angle_degrees [angle_degrees  < 0] += 180
 
-    for i in range(1, M - 1):
-        for j in range(1, N - 1):
-            q = 255  # Neighbor q
-            r = 255  # Neighbor r
+    for i in range(1, height - 1):
+        for j in range(1, width - 1):
+            neighbor_q  = 255  # Neighbor q
+            neighbor_r  = 255  # Neighbor r
 
             # Based on the angle, select neighbors q and r for comparison
-            if (0 <= angle[i, j] < 22.5) or (157.5 <= angle[i, j] <= 180):
-                r = G[i, j - 1]
-                q = G[i, j + 1]
+            if (0 <= angle_degrees[i, j] < 22.5) or (157.5 <= angle_degrees[i, j] <= 180):
+                neighbor_r = magnitude_image[i, j - 1]
+                neighbor_q = magnitude_image[i, j + 1]
 
-            elif (22.5 <= angle[i, j] < 67.5):
-                r = G[i - 1, j + 1]
-                q = G[i + 1, j - 1]
+            elif (22.5 <= angle_degrees[i, j] < 67.5):
+                neighbor_r = magnitude_image[i - 1, j + 1]
+                neighbor_q = magnitude_image[i + 1, j - 1]
 
-            elif (67.5 <= angle[i, j] < 112.5):
-                r = G[i - 1, j]
-                q = G[i + 1, j]
+            elif (67.5 <= angle_degrees[i, j] < 112.5):
+                neighbor_r = magnitude_image[i - 1, j]
+                neighbor_q = magnitude_image[i + 1, j]
 
-            elif (112.5 <= angle[i, j] < 157.5):
-                r = G[i + 1, j + 1]
-                q = G[i - 1, j - 1]
+            elif (112.5 <= angle_degrees[i, j] < 157.5):
+                neighbor_r = magnitude_image[i + 1, j + 1]
+                neighbor_q = magnitude_image[i - 1, j - 1]
 
             # If current pixel's magnitude is greater than or equal to both neighbors, keep it
-            if (G[i, j] >= q) and (G[i, j] >= r):
-                Z[i, j] = G[i, j]
+            if (magnitude_image[i, j] >= neighbor_q) and (magnitude_image[i, j] >= neighbor_r):
+                suppressed_image[i, j] = magnitude_image[i, j]
             else:
-                Z[i, j] = 0
+                suppressed_image[i, j] = 0
 
-    return Z
+    return suppressed_image
 
 def threshold(img, lowThresholdRatio = 0.05, highThresholdRatio = 0.09):
     """
@@ -148,10 +148,10 @@ def threshold(img, lowThresholdRatio = 0.05, highThresholdRatio = 0.09):
     lowThreshold = highThreshold * lowThresholdRatio
 
     # Get image dimensions
-    M, N = img.shape
+    rows, cols  = img.shape
 
     # Initialize result array
-    res = np.zeros((M, N), dtype=np.int32)
+    result  = np.zeros((rows, cols ), dtype=np.int32)
 
     # Define weak and strong values
     weak = np.int32(75)
@@ -163,46 +163,45 @@ def threshold(img, lowThresholdRatio = 0.05, highThresholdRatio = 0.09):
     weak_i, weak_j = np.where((img <= highThreshold) & (img >= lowThreshold))
 
     # Assign values to result array based on thresholds
-    res[strong_i, strong_j] = strong
-    res[weak_i, weak_j] = weak
+    result [strong_i, strong_j] = strong
+    result [weak_i, weak_j] = weak
 
-    return res
+    return result 
 
     
-def hysteresis(img):
+def hysteresis(edge_image):
     """
     Performs hysteresis thresholding on an edge magnitude image.
 
     Args:
-    - img (ndarray): Input image.
+    - edge_image (ndarray): Input image.
 
     Returns:
-    - img (ndarray): Image after hysteresis thresholding.
-
+    - thresholded_image (ndarray): Image after hysteresis thresholding.
     """
 
     # Get the dimensions of the image
-    M, N = img.shape
+    height, width  = edge_image.shape
 
     # Define weak and strong thresholds
-    weak = 75
-    strong = 255
+    weak_threshold  = 75
+    strong_threshold  = 255
 
     # Iterate over each pixel in the image
-    for i in range(1, M - 1):
-        for j in range(1, N - 1):
+    for i in range(1, height - 1):
+        for j in range(1, width  - 1):
             # Check if the current pixel intensity is weak
-            if img[i, j] == weak:
+            if edge_image[i, j] == weak_threshold :
                 try:
                     # Check if any neighboring pixel is strong
-                    if ((img[i + 1, j - 1] == strong) or (img[i + 1, j] == strong) or (img[i + 1, j + 1] == strong)
-                            or (img[i, j - 1] == strong) or (img[i, j + 1] == strong)
-                            or (img[i - 1, j - 1] == strong) or (img[i - 1, j] == strong) or (img[i - 1, j + 1] == strong)):
-                        img[i, j] = strong
+                    if ((edge_image[i + 1, j - 1] == strong_threshold ) or (edge_image[i + 1, j] == strong_threshold ) or (edge_image[i + 1, j + 1] == strong_threshold )
+                            or (edge_image[i, j - 1] == strong_threshold ) or (edge_image[i, j + 1] == strong_threshold )
+                            or (edge_image[i - 1, j - 1] == strong_threshold ) or (edge_image[i - 1, j] == strong_threshold ) or (edge_image[i - 1, j + 1] == strong_threshold )):
+                        edge_image[i, j] = strong_threshold 
                     else:
-                        img[i, j] = 0
+                        edge_image[i, j] = 0
                 except IndexError as e:
                     pass
 
-    return img
+    return edge_image
 
